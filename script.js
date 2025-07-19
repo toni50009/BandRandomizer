@@ -89,8 +89,9 @@ async function getRandomBandWith4Members(retryCount = 0) {
   const baseUrl = `https://musicbrainz.org/ws/2/artist?limit=100&offset=${offset}&fmt=json`;
 
   try {
-    console.log("Making request to:", proxy + baseUrl);
-    const response = await fetch(proxy + baseUrl);
+    const proxyUrl = proxy + encodeURIComponent(baseUrl);
+    console.log("Making request to:", proxyUrl);
+    const response = await fetch(proxyUrl);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -103,7 +104,8 @@ async function getRandomBandWith4Members(retryCount = 0) {
 
     for (const artist of groups) {
       const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
-      const detailRes = await fetch(proxy + detailUrl);
+      const detailProxyUrl = proxy + encodeURIComponent(detailUrl);
+      const detailRes = await fetch(detailProxyUrl);
 
       if (!detailRes.ok) {
         console.warn(
