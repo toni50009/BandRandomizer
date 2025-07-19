@@ -2,7 +2,7 @@ const LASTFM_API_KEY = "e5a5b7fce232c99a41fe30dfcb340fdb"; // 🔁 Substitua pel
 let isButtonDisabled = false;
 let currentBand = null;
 
-const proxy = "http://127.0.0.1:5500/index.html/proxy.php?url=";
+const proxy = "https://bandrandomizer.zanondev.com/proxy.php?url=";
 
 function showLoading() {
   const button = document.getElementById("botaoGerarBandas");
