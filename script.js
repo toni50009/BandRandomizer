@@ -76,38 +76,65 @@ async function getTopSongsFromLastFm(bandName) {
   }
 }
 
-async function getRandomBandWith4Members() {
-  const offset = Math.floor(Math.random() * 1000);
-  const baseUrl = `https://musicbrainz.org/ws/2/artist?limit=100&offset=${offset}&fmt=json`;
-  const response = await fetch(proxy + encodeURIComponent(baseUrl));
-  const data = await response.json();
-  const groups = (data.artists || []).filter((a) => a.type === "Group");
+async function getRandomBandWith4Members(retryCount = 0) {
+  const maxRetries = 3;
 
-  for (const artist of groups) {
-    const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
-    const detailRes = await fetch(proxy + encodeURIComponent(detailUrl));
-    const details = await detailRes.json();
-
-    const members = (details.relations || [])
-      .filter((rel) => rel.type === "member of band" && rel.artist)
-      .map((rel) => ({
-        name: rel.artist.name,
-        role: rel.attributes ? rel.attributes.join(", ") : "Membro",
-      }));
-
-    if (members.length === 4) {
-      return {
-        name: details.name,
-        year: new Date(details["life-span"]?.begin || "0000").getFullYear(),
-        genre: details.tags?.[0]?.name || "Desconhecido",
-        country: details.area?.name || "Desconhecido",
-        members: members.map((m) => `${m.name} (${m.role})`),
-      };
-    }
+  if (retryCount >= maxRetries) {
+    throw new Error(
+      "Não foi possível encontrar uma banda com 4 membros após várias tentativas"
+    );
   }
 
-  // Se nenhuma banda encontrada, tenta novamente
-  return await getRandomBandWith4Members();
+  const offset = Math.floor(Math.random() * 1000);
+  const baseUrl = `https://musicbrainz.org/ws/2/artist?limit=100&offset=${offset}&fmt=json`;
+
+  try {
+    const response = await fetch(proxy + encodeURIComponent(baseUrl));
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const groups = (data.artists || []).filter((a) => a.type === "Group");
+
+    for (const artist of groups) {
+      const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
+      const detailRes = await fetch(proxy + encodeURIComponent(detailUrl));
+
+      if (!detailRes.ok) {
+        continue; // Skip this artist if detail request fails
+      }
+
+      const details = await detailRes.json();
+
+      const members = (details.relations || [])
+        .filter((rel) => rel.type === "member of band" && rel.artist)
+        .map((rel) => ({
+          name: rel.artist.name,
+          role: rel.attributes ? rel.attributes.join(", ") : "Membro",
+        }));
+
+      if (members.length === 4) {
+        return {
+          name: details.name,
+          year: new Date(details["life-span"]?.begin || "0000").getFullYear(),
+          genre: details.tags?.[0]?.name || "Desconhecido",
+          country: details.area?.name || "Desconhecido",
+          members: members.map((m) => `${m.name} (${m.role})`),
+        };
+      }
+    }
+
+    // Se nenhuma banda encontrada, tenta novamente com contador
+    return await getRandomBandWith4Members(retryCount + 1);
+  } catch (error) {
+    console.error("Erro ao buscar banda:", error);
+    if (retryCount < maxRetries - 1) {
+      return await getRandomBandWith4Members(retryCount + 1);
+    }
+    throw error;
+  }
 }
 
 async function buscarBanda() {
@@ -127,10 +154,22 @@ async function buscarBanda() {
     showCols();
   } catch (error) {
     console.error("Erro ao buscar banda:", error);
-    alert("Ocorreu um erro ao buscar dados da banda. Tente novamente.");
-  }
 
-  setTimeout(enableButton, 3000);
+    let errorMessage = "Ocorreu um erro ao buscar dados da banda. ";
+
+    if (error.message.includes("HTTP error")) {
+      errorMessage += "Problema de conexão com a API. ";
+    } else if (error.message.includes("Não foi possível encontrar")) {
+      errorMessage += "Não foi possível encontrar uma banda adequada. ";
+    } else {
+      errorMessage += "Erro interno do servidor. ";
+    }
+
+    errorMessage += "Tente novamente.";
+    alert(errorMessage);
+  } finally {
+    enableButton();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
