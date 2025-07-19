@@ -105,7 +105,7 @@ async function getRandomBandWith4Members(retryCount = 0) {
 
     for (const artist of groups) {
       // Fix: Use proper URL format for MusicBrainz artist details
-      const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area%20artist-rels%20tags`;
+      const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
       const detailProxyUrl = proxy + encodeURIComponent(detailUrl);
       console.log("Getting details for:", artist.name, "URL:", detailUrl);
       const detailRes = await fetch(detailProxyUrl);
