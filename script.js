@@ -86,7 +86,8 @@ async function getRandomBandWith4Members(retryCount = 0) {
   }
 
   const offset = Math.floor(Math.random() * 1000);
-  const baseUrl = `https://musicbrainz.org/ws/2/artist?limit=100&offset=${offset}&fmt=json`;
+  // Fix: Use the correct MusicBrainz search endpoint
+  const baseUrl = `https://musicbrainz.org/ws/2/artist/?query=type:Group&limit=100&offset=${offset}&fmt=json`;
 
   try {
     const proxyUrl = proxy + encodeURIComponent(baseUrl);
