@@ -8,15 +8,33 @@ header("Content-Type: application/json");
 
 $url = $_GET['url'] ?? '';
 
-if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
+// Debug: Log what we received
+error_log("Proxy received URL: " . $url);
+
+// Decode the URL if it's encoded
+$decodedUrl = urldecode($url);
+
+if (!$url) {
     http_response_code(400);
-    echo json_encode(['erro' => 'URL inválida']);
+    echo json_encode(['erro' => 'URL não fornecida']);
+    exit;
+}
+
+// More flexible URL validation
+if (!preg_match('/^https?:\/\/.+/', $decodedUrl)) {
+    http_response_code(400);
+    echo json_encode([
+        'erro' => 'URL inválida',
+        'url_received' => $url,
+        'decoded_url' => $decodedUrl,
+        'debug_info' => 'URL validation failed'
+    ]);
     exit;
 }
 
 // Use cURL instead of file_get_contents for better control
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_URL, $decodedUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -34,9 +52,10 @@ curl_close($ch);
 if ($response === false || $error) {
     http_response_code(500);
     echo json_encode([
-        'erro' => 'Erro ao acessar a URL: ' . $url,
+        'erro' => 'Erro ao acessar a URL: ' . $decodedUrl,
         'curl_error' => $error,
-        'http_code' => $httpCode
+        'http_code' => $httpCode,
+        'original_url' => $url
     ]);
     exit;
 }
@@ -45,8 +64,9 @@ if ($httpCode !== 200) {
     http_response_code($httpCode);
     echo json_encode([
         'erro' => 'HTTP Error: ' . $httpCode,
-        'url' => $url,
-        'response' => $response
+        'url' => $decodedUrl,
+        'response' => $response,
+        'original_url' => $url
     ]);
     exit;
 }

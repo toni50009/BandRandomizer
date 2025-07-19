@@ -89,10 +89,13 @@ async function getRandomBandWith4Members(retryCount = 0) {
   const baseUrl = `https://musicbrainz.org/ws/2/artist?limit=100&offset=${offset}&fmt=json`;
 
   try {
-    const response = await fetch(proxy + encodeURIComponent(baseUrl));
+    console.log("Making request to:", proxy + baseUrl);
+    const response = await fetch(proxy + baseUrl);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error("Proxy response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
@@ -100,9 +103,13 @@ async function getRandomBandWith4Members(retryCount = 0) {
 
     for (const artist of groups) {
       const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
-      const detailRes = await fetch(proxy + encodeURIComponent(detailUrl));
+      const detailRes = await fetch(proxy + detailUrl);
 
       if (!detailRes.ok) {
+        console.warn(
+          `Failed to get details for artist ${artist.name}:`,
+          detailRes.status
+        );
         continue; // Skip this artist if detail request fails
       }
 
