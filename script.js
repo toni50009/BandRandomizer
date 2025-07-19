@@ -104,19 +104,24 @@ async function getRandomBandWith4Members(retryCount = 0) {
     const groups = (data.artists || []).filter((a) => a.type === "Group");
 
     for (const artist of groups) {
-      const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area+artist-rels+tags`;
+      // Fix: Use proper URL format for MusicBrainz artist details
+      const detailUrl = `https://musicbrainz.org/ws/2/artist/${artist.id}?fmt=json&inc=area&inc=artist-rels&inc=tags`;
       const detailProxyUrl = proxy + encodeURIComponent(detailUrl);
+      console.log("Getting details for:", artist.name, "URL:", detailUrl);
       const detailRes = await fetch(detailProxyUrl);
 
       if (!detailRes.ok) {
+        const errorText = await detailRes.text();
         console.warn(
           `Failed to get details for artist ${artist.name}:`,
-          detailRes.status
+          detailRes.status,
+          errorText
         );
         continue; // Skip this artist if detail request fails
       }
 
       const details = await detailRes.json();
+      console.log("Details for", artist.name, ":", details);
 
       const members = (details.relations || [])
         .filter((rel) => rel.type === "member of band" && rel.artist)
@@ -124,6 +129,14 @@ async function getRandomBandWith4Members(retryCount = 0) {
           name: rel.artist.name,
           role: rel.attributes ? rel.attributes.join(", ") : "Membro",
         }));
+
+      console.log(
+        "Members found for",
+        artist.name,
+        ":",
+        members.length,
+        members
+      );
 
       if (members.length === 4) {
         return {
