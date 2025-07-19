@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BandRandomizer</title>
+
+    <link rel="icon" href="music-note.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="cabecalho">
+      <h2 class="cabecalhotitulo">BandRandomizer</h2>
+    </header>
+    <main class="conteudoPrincipal">
+      <section class="conteudo">
+        <h1>Descubra uma banda aleatória</h1>
+        <p>
+          Clique no botão abaixo para descobrir uma banda aleatória, seus
+          membros e mais!
+        </p>
+        <button id="botaoGerarBandas" onclick="buscarBanda()">
+          Randomizar
+        </button>
+      </section>
+      <section class="conteudo2">
+        <div id="bandaMusicas" class="col">
+          <h2>Músicas Mais Famosas</h2>
+          <ul id="bandaMusicasLista" class="lista">
+            <li id="bandaMusicasListaItem" class="listaItem"></li>
+            <li id="bandaMusicasListaItem" class="listaItem"></li>
+            <li id="bandaMusicasListaItem" class="listaItem"></li>
+            <li id="bandaMusicasListaItem" class="listaItem"></li>
+          </ul>
+        </div>
+        <div id="bandaInfo" class="col">
+          <h2>Info da Banda</h2>
+          <ul id="bandaInfoLista" class="lista">
+            <li class="listaItem">
+              Nome: <span id="bandaInfoListaItemNomeValor"></span>
+            </li>
+            <li class="listaItem">
+              Ano: <span id="bandaInfoListaItemAnoValor"></span>
+            </li>
+            <li class="listaItem">
+              Gênero: <span id="bandaInfoListaItemGeneroValor"></span>
+            </li>
+            <li class="listaItem">
+              País: <span id="bandaInfoListaItemPaisValor"></span>
+            </li>
+          </ul>
+        </div>
+        <div id="bandaMembros" class="col">
+          <h2>Membros</h2>
+          <ul id="listaMembros" class="lista"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <p>
+        Desenvolvido por
+        <a href="https://zanondev.com" style="color: #bbb807">ZanonDev</a>
+      </p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

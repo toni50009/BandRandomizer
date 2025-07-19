@@ -1,0 +1,109 @@
+:root {
+  --cor-primaria: #000;
+  --cor-secundaria: #fff;
+  --cor-terciaria: #1f1c1c;
+  --cor-quaternaria: #bbb807;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  color: var(--cor-secundaria);
+}
+
+body {
+  background-color: var(--cor-primaria);
+}
+
+.cabecalho {
+  background-color: var(--cor-terciaria);
+  padding: 0.25rem;
+  text-align: center;
+}
+
+.conteudoPrincipal {
+  height: 100vh;
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.conteudo2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--cor-terciaria);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 33%;
+  height: 100%;
+  min-height: 200px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.col h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+ul {
+  list-style: none;
+}
+
+.listaItem {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.listaItem:last-child {
+  border-bottom: none;
+}
+
+#botaoGerarBandas {
+  background-color: var(--cor-quaternaria);
+  color: var(--cor-primaria);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#botaoGerarBandas:hover:not(:disabled) {
+  background-color: #a3a006;
+  transform: translateY(-2px);
+}
+
+#botaoGerarBandas:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rodape {
+  background-color: var(--cor-terciaria);
+  padding: 1rem;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
